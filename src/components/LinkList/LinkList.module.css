@@ -1,0 +1,58 @@
+.links {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  gap: 8px;
+  margin: 32px 0 0;
+
+  @media (max-width: 1024px) {
+    margin-top: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
+.item {
+  @media (max-width: 1024px) {
+    flex: 1 1 calc(50% - 8px);
+  }
+}
+
+.link {
+  color: var(--text-h);
+  font-size: 16px;
+  border-radius: 6px;
+  background: var(--social-bg);
+  display: flex;
+  padding: 6px 12px;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  transition: box-shadow 0.3s;
+
+  &:hover {
+    box-shadow: var(--shadow);
+  }
+
+  @media (max-width: 1024px) {
+    width: 100%;
+    justify-content: center;
+    box-sizing: border-box;
+  }
+}
+
+.logo {
+  height: 18px;
+}
+
+.buttonIcon {
+  height: 18px;
+  width: 18px;
+}
+
+/* Monochrome sprite icons need inverting on a dark background. */
+@media (prefers-color-scheme: dark) {
+  .invertIcons .buttonIcon {
+    filter: invert(1) brightness(2);
+  }
+}

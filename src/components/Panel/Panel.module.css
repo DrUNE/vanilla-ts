@@ -1,0 +1,22 @@
+.panel {
+  flex: 1 1 0;
+  padding: 32px;
+  @media (max-width: 1024px) {
+    padding: 24px 20px;
+  }
+}
+
+.divided {
+  border-right: 1px solid var(--border);
+
+  @media (max-width: 1024px) {
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+}
+
+.icon {
+  margin-bottom: 16px;
+  width: 22px;
+  height: 22px;
+}
