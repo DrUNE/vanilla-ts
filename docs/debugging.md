@@ -1,56 +1,58 @@
-# Отладка: от DOM-элемента к исходному коду
+# Debugging: from a DOM element to its source code
 
-В проекте нет React и виртуального DOM: компоненты сразу возвращают настоящие DOM-узлы, поэтому в DevTools нет дерева компонентов. Вместо него dev-режим размечает DOM атрибутами, по которым можно найти исходник.
+There is no React or virtual DOM in this project: components return real DOM nodes directly, so DevTools has no component tree to show. Instead, dev mode annotates the DOM with attributes that lead you to the source.
 
-## Что добавляется в DOM
+*Русская версия: [debugging.ru.md](debugging.ru.md).*
 
-Только в dev-режиме (`npm run dev`) и в Vitest. В продакшен-сборке этих атрибутов нет.
+## Attributes added to the DOM
 
-| Атрибут | Где | Пример | Смысл |
+Only in dev mode (`npm run dev`) and in Vitest. Production builds do not contain them.
+
+| Attribute | Where | Example | Meaning |
 | --- | --- | --- | --- |
-| `data-source` | каждый элемент | `src/components/Counter/index.tsx:12` | файл и строка JSX, создавшего элемент |
-| `data-component` | корневой элемент компонента | `Counter` | имя функции-компонента |
+| `data-source` | every element | `src/components/Counter/index.tsx:12` | file and line of the JSX that created the element |
+| `data-component` | root element of a component | `Counter` | name of the component function |
 
-Если компонент сразу возвращает другой компонент, имена записываются через пробел: `data-component="Outer Inner"`. Искать такой элемент нужно селектором `[data-component~=Inner]`.
+If a component directly returns another component, the names are space-separated: `data-component="Outer Inner"`. Match such an element with the selector `[data-component~=Inner]`.
 
-Компоненты, возвращающие фрагмент, атрибута не получают: у них нет корневого элемента.
+Components that return a fragment get no attribute, since they have no root element.
 
-## Найти исходник по элементу
+## Finding the source from an element
 
-1. Откройте вкладку **Elements** и выберите элемент (Ctrl+Shift+C и клик по странице).
-2. Посмотрите атрибут `data-source`, например `src/components/Counter/index.tsx:12`.
-3. Откройте **Sources**, нажмите Ctrl+P и введите путь (или только `Counter/index.tsx`), затем Ctrl+G и номер строки.
+1. Open the **Elements** panel and select an element (Ctrl+Shift+C, then click on the page).
+2. Read its `data-source` attribute, e.g. `src/components/Counter/index.tsx:12`.
+3. Open **Sources**, press Ctrl+P and type the path (or just `Counter/index.tsx`), then Ctrl+G and the line number.
 
-Чтобы узнать, в каком компоненте лежит элемент, поднимитесь вверх по дереву до ближайшего `data-component`. То же самое в консоли:
+To find which component an element belongs to, walk up the tree to the nearest `data-component`. The same from the console:
 
 ```js
-$0.dataset.source                                  // где создан выбранный элемент
-$0.closest('[data-component]').dataset.component   // ближайший компонент-владелец
-$0.closest('[data-component]').dataset.source      // где у этого компонента корневой элемент
+$0.dataset.source                                  // where the selected element was created
+$0.closest('[data-component]').dataset.component   // nearest owning component
+$0.closest('[data-component]').dataset.source      // where that component's root element is created
 ```
 
-Обратная задача: найти на странице все экземпляры компонента.
+The reverse direction, finding every instance of a component on the page:
 
 ```js
 document.querySelectorAll('[data-component~=Counter]')
 ```
 
-Подсветить элементы из этого списка можно, выбрав один из них в Elements или выполнив `inspect(document.querySelector('[data-component~=Counter]'))`.
+To reveal one in Elements, run `inspect(document.querySelector('[data-component~=Counter]'))`.
 
-## Другие пути к исходнику
+## Other routes to the source
 
-- **Стили.** На панели **Styles** у правила указан файл вида `Counter.module.css:5`, ссылка ведёт прямо в CSS-модуль (включён `css.devSourcemap`).
-- **Обработчики событий.** На панели **Event Listeners** ссылка у `click` и других событий ведёт на строку в `index.tsx`, где вызван `onClick`.
-- **Стек вызовов и точки останова.** Сорсмапы TypeScript включены в dev по умолчанию, поэтому в Sources и в стеке видны исходные `.tsx`, а не скомпилированный код.
+- **Styles.** In the **Styles** pane each rule points to a file such as `Counter.module.css:5`; the link opens the CSS module directly (`css.devSourcemap` is enabled).
+- **Event handlers.** In the **Event Listeners** pane the link next to `click` and other events leads to the line in `index.tsx` where `onClick` is declared.
+- **Call stacks and breakpoints.** TypeScript source maps are on by default in dev, so Sources and stack traces show the original `.tsx`, not compiled code.
 
-## Продакшен-сборка
+## Production builds
 
-`npm run build` создаёт `.map`-файлы (`build.sourcemap`), поэтому стек ошибок и точки останова указывают на исходники. Атрибутов `data-source` и `data-component` в сборке нет: по DOM-элементу исходник там найти нельзя, только через стили, обработчики или стек.
+`npm run build` emits `.map` files (`build.sourcemap`), so error stacks and breakpoints resolve to the sources. The `data-source` and `data-component` attributes are not in the bundle: from a DOM element in production you can only reach the source via styles, event handlers or stack traces.
 
-## Для тестов
+## Notes for tests
 
-Vitest тоже использует dev-рантайм, поэтому у элементов в тестах есть эти атрибуты. Не проверяйте, что у элемента «нет атрибутов» или что `outerHTML` равен точной строке без них.
+Vitest also uses the dev runtime, so elements in tests carry these attributes. Do not assert that an element has no attributes, or that `outerHTML` equals an exact string without them.
 
-## Где это устроено
+## Where it lives
 
-[src/lib/jsx/jsx-dev-runtime.ts](../src/lib/jsx/jsx-dev-runtime.ts) (функция `jsxDEV`) и настройки `css.devSourcemap` и `build.sourcemap` в [vite.config.ts](../vite.config.ts).
+[src/lib/jsx/jsx-dev-runtime.ts](../src/lib/jsx/jsx-dev-runtime.ts) (the `jsxDEV` function) and the `css.devSourcemap` / `build.sourcemap` settings in [vite.config.ts](../vite.config.ts).
