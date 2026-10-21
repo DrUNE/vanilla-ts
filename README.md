@@ -85,3 +85,18 @@ The JSX import source is a made-up module name, `jsx-dom`, mapped to `src/lib/js
 This is a demonstration, not a framework. There is no reactivity: nothing re-renders when a variable changes, and every update is a manual DOM mutation.
 
 The `Counter` above works despite this only because its click handler mutates the DOM directly (`button.textContent = ...`). The `count` variable itself is not reactive: the `{count}` in the JSX is read once, when the component is created. If the handler only did `count += 1` and did not touch the DOM, the button text would never change. That is fine for small widgets and static pages, and it is the trade-off the project exists to show.
+
+## When to grow, and when to switch
+
+The approach can be extended a little before it stops paying off:
+
+- **A state manager** for state shared between components. For example `zustand/vanilla` works without React: it gives you `getState`, `setState` and `subscribe`. You still wire `subscribe` to a `render` function yourself, so it adds a store, not reactive DOM. Caveats: the store is a module-level singleton, and there is no unmount hook to unsubscribe.
+- **CSS-in-JS** instead of CSS Modules, if you want styles computed from props. Libraries that do not depend on React (or a small hand-written helper) can work, but it is one more thing to maintain next to the runtime.
+
+Past that point (shared state, lists that change, conditional rendering, cleanup on removal, async data) you will be rebuilding what a framework already does, and it is better to use one:
+
+- **React**: the largest ecosystem and tooling, at the cost of a virtual DOM and re-rendering.
+- **Solid**: the closest in spirit to this project. JSX compiles to real DOM operations, and fine-grained signals update only what changed.
+- **Svelte**: a compiler that generates DOM updates from templates, with reactivity built into the language.
+
+Moving over is not hard: components here are already small functions with colocated CSS Modules and tests, so most of the structure carries over.
