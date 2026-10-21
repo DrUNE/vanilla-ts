@@ -58,4 +58,11 @@ describe('dev runtime', () => {
     const el = (<div />) as HTMLElement
     expect(el.dataset.source).toMatch(/^src\/lib\/jsx\/jsx-runtime\.test\.tsx:\d+$/)
   })
+
+  it('tags component root elements with the component name', () => {
+    const Inner = () => <b />
+    const Outer = () => <Inner />
+    const el = (<Outer />) as HTMLElement
+    expect(el.dataset.component).toBe('Outer Inner')
+  })
 })

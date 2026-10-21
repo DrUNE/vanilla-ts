@@ -19,7 +19,7 @@ Vanilla TypeScript + Vite with **no UI framework**. JSX is supported through a c
 - JSX expressions evaluate **directly to real DOM nodes** (no virtual DOM, no re-rendering). Components are plain functions `(props) => Node`.
 - State is handled imperatively: a component keeps local variables and mutates the DOM itself in event handlers (see [Counter](src/components/Counter/index.tsx), which casts the JSX result to `HTMLButtonElement` and updates `textContent`).
 - `onXxx` props become `addEventListener('xxx')`; other props become attributes (`class`, not `className`). Tags in the `SVG_TAGS` set are created in the SVG namespace — add new SVG tags there (and to `IntrinsicElements`) when needed.
-- In dev (and Vitest) `jsx-dev-runtime.ts` adds `data-source="src/...:line"` to every element; production builds use the plain runtime, so it is absent there. Tests must not assume elements have no extra attributes.
+- In dev (and Vitest) `jsx-dev-runtime.ts` adds `data-source="src/...:line"` to every element and `data-component="Name"` to each component's root element; production builds use the plain runtime, so it is absent there. Tests must not assume elements have no extra attributes.
 - The `jsx-dom` import source is a fake name wired to `src/lib/jsx` in two places that must stay in sync: `paths` in [tsconfig.json](tsconfig.json) (`jsxImportSource: "jsx-dom"`) and the `resolve.alias` in [vite.config.ts](vite.config.ts).
 
 Entry: [index.html](index.html) owns the `#app` root; [src/main.ts](src/main.ts) imports global CSS and calls `mountApp` ([App](src/components/App/index.tsx)), which fills that root.
