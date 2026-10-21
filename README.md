@@ -16,14 +16,41 @@ A demo project showing that a modern component-style UI can be built with **plai
 ```tsx
 export function Counter() {
   let count = 0
+
+  const render = () => {
+    button.textContent = `Count is ${count}`
+  }
+
+  const increment = () => {
+    count += 1
+    render()
+  }
+
   const button = (
-    <button type="button" onClick={() => { count += 1; button.textContent = `Count is ${count}` }}>
-      Count is {count}
-    </button>
+    <button type="button" onClick={increment} />
   ) as HTMLButtonElement
+
+  render()
   return button
 }
 ```
+
+### Pattern: state, `render` and handlers
+
+Components without a framework follow one small convention, shown above:
+
+- **State** is a plain local variable (`count`).
+- **`render`** is the only function that writes state into the DOM. It is also called once at creation, so the initial markup is produced by the same code as every update instead of being duplicated in the JSX.
+- **Handlers** (`increment`) change the state and then call `render`.
+
+Why this is better than putting everything inside the inline `onClick`:
+
+- **One place for DOM updates.** When the view needs to change, there is exactly one function to edit, and initial and updated output cannot drift apart.
+- **Handlers stay about behavior.** They read like the logic they implement, are easy to reuse from several events, and can be tested by calling the handler and checking the DOM.
+- **The missing reactivity is explicit.** Since nothing re-renders automatically, the rule "every state change must end in `render()`" is visible in the code and easy to review.
+- **Easy to grow.** Adding a second piece of state or a second event means a new handler that calls the same `render`, not another copy of DOM-patching code.
+
+`render` refers to `button`, which is declared below it. That is safe because `render` only runs after the button exists: its first call is placed right after the declaration.
 
 ## Getting started
 
@@ -55,4 +82,6 @@ The JSX import source is a made-up module name, `jsx-dom`, mapped to `src/lib/js
 
 ## Limitations
 
-This is a demonstration, not a framework. There is no reactivity: nothing re-renders when a variable changes, and every update is a manual DOM mutation. That is fine for small widgets and static pages, and it is the trade-off the project exists to show.
+This is a demonstration, not a framework. There is no reactivity: nothing re-renders when a variable changes, and every update is a manual DOM mutation.
+
+The `Counter` above works despite this only because its click handler mutates the DOM directly (`button.textContent = ...`). The `count` variable itself is not reactive: the `{count}` in the JSX is read once, when the component is created. If the handler only did `count += 1` and did not touch the DOM, the button text would never change. That is fine for small widgets and static pages, and it is the trade-off the project exists to show.
