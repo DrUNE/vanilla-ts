@@ -1,5 +1,7 @@
 # vanilla-ts
 
+*Русская версия: [README.ru.md](README.ru.md).*
+
 A demo project showing that a modern component-style UI can be built with **plain TypeScript and Vite, with no UI framework**. It uses JSX, but not React: a ~50-line custom JSX runtime turns every JSX expression straight into a real DOM node. There is no virtual DOM, no diffing and no re-rendering. The page is the Vite starter layout, rebuilt out of small components, and serves as a reference for how far you can get without a framework.
 
 ## Key ideas
@@ -49,7 +51,7 @@ The JSX import source is a made-up module name, `jsx-dom`, mapped to `src/lib/js
 ## Documentation
 
 - [Debugging: from a DOM element to its source](docs/debugging.md) ([RU](docs/debugging.ru.md))
-- [CLAUDE.md](CLAUDE.md): guidance for AI coding assistants working in this repo
+- [CLAUDE.md](CLAUDE.md): guidance for AI coding assistants working in this repo (English only)
 
 ## Limitations
 
