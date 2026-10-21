@@ -1,4 +1,4 @@
 import './global.css'
-import { mountApp } from './components/App/App.ts'
+import { mountApp } from '@components/App'
 
 mountApp(document.getElementById('app')!)

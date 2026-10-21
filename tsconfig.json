@@ -5,6 +5,14 @@
     "lib": ["ES2023", "DOM"],
     "types": ["vite/client"],
     "allowArbitraryExtensions": true,
+    "jsx": "react-jsx",
+    "jsxImportSource": "jsx-dom",
+    "paths": {
+      "jsx-dom/*": ["./src/lib/jsx/*"],
+      "@components/*": ["./src/components/*"],
+      "@lib/*": ["./src/lib/*"],
+      "@assets/*": ["./src/assets/*"]
+    },
     "skipLibCheck": true,
 
     /* Bundler mode */
@@ -20,5 +28,5 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src"]
+  "include": ["src", "vite.config.ts"]
 }
