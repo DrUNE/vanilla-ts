@@ -12,7 +12,7 @@ describe('jsx runtime', () => {
 
   it('skips null, undefined and false attributes and children', () => {
     const el = (<div hidden={false} title={undefined}>{[null, false, undefined, "ok"]}</div>) as HTMLElement
-    expect(el.attributes.length).toBe(0)
+    expect(el.getAttributeNames().filter((n) => n !== 'data-source')).toEqual([])
     expect(el.textContent).toBe('ok')
   })
 
@@ -50,5 +50,12 @@ describe('jsx runtime', () => {
     expect(frag).toBeInstanceOf(DocumentFragment)
     expect(frag.childNodes.length).toBe(2)
     expect(Fragment({ children: 'a' }).textContent).toBe('a')
+  })
+})
+
+describe('dev runtime', () => {
+  it('tags elements with their JSX source location', () => {
+    const el = (<div />) as HTMLElement
+    expect(el.dataset.source).toMatch(/^src\/lib\/jsx\/jsx-runtime\.test\.tsx:\d+$/)
   })
 })

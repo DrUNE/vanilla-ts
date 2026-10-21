@@ -11,5 +11,7 @@ export default defineConfig({
       '@assets': fromSrc('assets'),
     },
   },
+  css: { devSourcemap: true },
+  build: { sourcemap: true },
   test: { environment: 'jsdom' },
 })
